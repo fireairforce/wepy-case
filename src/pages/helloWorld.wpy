@@ -1,0 +1,19 @@
+<style lang="less">
+
+</style>
+
+<template>
+  <view>Hello Wolrd</view>
+</template>
+
+<script>
+import wepy from 'wepy';
+export default class HelloWorld extends wepy.page {
+  components = {}
+  data = {
+    imgPath: '',
+    imgWidth: 0,
+    imgHeight: 0,
+  }
+}
+</script>
