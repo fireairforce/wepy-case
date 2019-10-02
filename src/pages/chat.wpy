@@ -1,0 +1,57 @@
+<template>
+  <view class="pages">
+       <view class="chats">
+            <repeat for="{{chats}}" key="index" item="item">
+                <view style="font-size:20rpx;color:#ababab">
+                    {{ item.time }}
+                </view>
+                <view style="font-size:25rpx;padding-bottom:20rpx;">
+                    {{item.text}}
+                </view>
+            </repeat>
+       </view>
+       <view class="chatInput">
+          <input placeholder="请输入聊天内容" bindinput="userSay" />
+       </view>
+       <button @tap="sendMessage" size="mini" class="btn">
+            发送消息
+       </button>
+  </view>
+</template>
+
+<script>
+export default {
+
+}
+</script>
+
+<style lang="less">
+  .pages{
+      position: fixed;
+      height: 100vh;
+      width: 100vh;
+      background: #e8e9d2;
+  }
+  .chats{
+      text-align: center;
+      margin: 10vh 10vh 10vw 10vw;
+      height: 65vh;
+      width: 80vw;
+      background-color: aliceblue;
+      overflow: auto;
+  }
+  .chatInput{
+      background-color: aliceblue;
+      height: 40rpx;
+      font-size: 20rpx;
+      padding: 10rpx;
+      width: 70vw;
+      margin-left: 15vw;
+      border-radius: 20rpx;
+      margin-bottom: 3vh;
+  }
+  .btn{
+      width: 70vw;
+      margin-left: 15vw;
+  }
+</style>
