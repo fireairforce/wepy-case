@@ -20,8 +20,91 @@
 </template>
 
 <script>
-export default {
+import wepy from 'wepy';
+let socketOpen = false;
+export default class Chat extends wepy.page {
+   data = {
+       say: '',
+       chats : [{ time:'聊天开始',text:'' }]
+   }
+   methods = {
+       userSay(e){
+           this.say = e.detail.value;
+           this.$apply()
+       },
+       sedMessage () {
+           let time = new Date();
+           this.chats = this.chats.concat([{ time:time.toLocaleTimeString(),text:'我说: '+this.say }])
+           this.handleSendMessage()
+           this.$apply()  
+       }
+   }
+   // 启动一个socket
+   startSocket() {
+       wepy.connectSocket({
+           url:'ws://127.0.0.1:8080'
+       })
+   }    
+   wssInit() {
+       const that = this;
+       this.startSocket()
+       // 连接失败显示
+       wepy.onSocketError(res => {
+          socketOpen = false;
+         console.log('WebSocket连接打开失败，请检查！');
+         setTimeout(() => {
+             this.startSocket() 
+         }, 2000);
+       });
 
+    //    监听连接成功
+       wepy.onSocketOpen(res => {
+         socketOpen = true;
+         console.log('WebSocket连接已打开！');
+        //  接收服务器的消息
+         that.receiveMessage();
+       });
+   }
+   //    接收服务器的消息
+   receiveMessage() {
+       const that = this;
+       if(socketOpen){
+           console.log(`读取socket服务器...`);
+           wepy.onSocketMessage(res => {
+             let time = new Date();
+             console.log('收到服务器内容：' + res.data);
+             let resData = JSON.parse(res.data);
+             console.log(resData);
+             if(resData.data){
+                 this.chats = that.chats.concat([{ time:time.toLocaleTimeString(),text:'服务器说: ' + resData.data }])
+                 this.$apply();
+             }
+           });  
+       } else {
+          //    未打开状态需要延时重新调用
+          console.log(`服务器没有连接`);
+          setTimeout(() => {
+              this.receiveMessage();
+          }, 2000);
+       }
+   }
+   handleSendMessage(){
+       const that = this;
+       console.log(`尝试向服务器发送消息: `);
+       console.log(that.say);
+       wepy.sendSocketMessage({
+         data: JSON.stringify({ data: that.say })
+       });
+   }
+   events = {}
+
+   onLoad(){
+       const that = this;
+    //    延迟启动socket
+    setTimeout(() => {
+        this.wssInit();
+    }, 2000);
+   }
 }
 </script>
 
